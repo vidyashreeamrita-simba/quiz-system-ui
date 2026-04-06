@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quiz App UI</title>
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .container {
+        width: 90%;
+        max-width: 450px;
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        color: white;
+        animation: fadeIn 0.6s ease-in-out;
+    }
+
+    h1, h2 {
+        margin-bottom: 10px;
+    }
+
+    p {
+        opacity: 0.9;
+    }
+
+    .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 25px;
+        background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: 0.3s;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .option {
+        background: rgba(255,255,255,0.2);
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .option:hover {
+        background: rgba(255,255,255,0.35);
+    }
+
+    .option.selected {
+        background: #00c9a7;
+        color: white;
+        font-weight: bold;
+    }
+
+    .progress {
+        font-size: 14px;
+        opacity: 0.8;
+        margin-bottom: 10px;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style></head>
+<body>
+
+<!-- Dashboard -->
+<div class="container" id="dashboard">
+    <h1>Quiz App</h1>
+    <p>Test your knowledge with a quick quiz!</p>
+    <button class="btn" onclick="startQuiz()">Start Quiz</button>
+</div>
+
+<!-- Quiz Screen -->
+<div class="container hidden" id="quiz">
+    <div class="progress" id="progress"></div>
+    <h2 id="question"></h2>
+    <div id="options"></div>
+    <button class="btn" onclick="nextQuestion()">Next</button>
+</div>
+
+<!-- Result Screen -->
+<div class="container hidden" id="result">
+    <h1>Quiz Completed 🎉</h1>
+    <h2 id="score"></h2>
+    <button class="btn" onclick="restartQuiz()">Restart</button>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "What is the capital of France?",
+            options: ["Berlin", "Madrid", "Paris", "Rome"],
+            answer: "Paris"
+        },
+        {
+            question: "Which language runs in browser?",
+            options: ["Python", "Java", "C++", "JavaScript"],
+            answer: "JavaScript"
+        },
+        {
+            question: "What does CSS stand for?",
+            options: ["Color Style Sheet", "Cascading Style Sheets", "Computer Style Sheet", "Creative Style System"],
+            answer: "Cascading Style Sheets"
+        }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let selected = null;
+
+    function startQuiz() {
+        document.getElementById("dashboard").classList.add("hidden");
+        document.getElementById("quiz").classList.remove("hidden");
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        selected = null;
+        const q = questions[currentQuestion];
+
+        document.getElementById("progress").textContent =
+            `Question ${currentQuestion + 1} of ${questions.length}`;
+
+        document.getElementById("question").textContent = q.question;
+
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+
+        q.options.forEach(opt => {
+            const div = document.createElement("div");
+            div.classList.add("option");
+            div.textContent = opt;
+
+            div.onclick = () => {
+                document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+                div.classList.add("selected");
+                selected = opt;
+            };
+
+            optionsDiv.appendChild(div);
+        });
+    }
+
+    function nextQuestion() {
+        if (!selected) {
+            alert("Select an option!");
+            return;
+        }
+
+        if (selected === questions[currentQuestion].answer) {
+            score++;
+        }
+
+        currentQuestion++;
+
+        if (currentQuestion < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById("quiz").classList.add("hidden");
+        document.getElementById("result").classList.remove("hidden");
+
+        document.getElementById("score").textContent =
+            `Your Score: ${score} / ${questions.length}`;
+    }
+
+    function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+
+        document.getElementById("result").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+    }
+</script>
+
+</body>
+</html>
